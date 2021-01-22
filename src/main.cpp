@@ -16,9 +16,11 @@ static std::optional<std::vector<std::byte>> ReadFile(const std::string &path)
     if( !is )
         return std::nullopt;
     
+    // determine size of the input stream 
     auto size = is.tellg();
     std::vector<std::byte> contents(size);    
     
+    // input stream to content vector
     is.seekg(0);
     is.read((char*)contents.data(), size);
 
@@ -52,15 +54,26 @@ int main(int argc, const char **argv)
             osm_data = std::move(*data);
     }
     
-    // TODO 1: Declare floats `start_x`, `start_y`, `end_x`, and `end_y` and get
-    // user input for these values using std::cin. Pass the user input to the
-    // RoutePlanner object below in place of 10, 10, 90, 90.
-
+    // User input : Find Between Begining point to Ending Point
+    float start_x;
+    float start_y; 
+    float end_x;
+    float end_y;
+    std::cout << "Defining Starting point data X: ";
+    std::cin >> start_x; 
+    std::cout << "Defining Starting point data Y: ";
+    std::cin >> start_y; 
+    std::cout << "Defining Ending point data X: ";
+    std::cin >> end_x; 
+    std::cout << "Defining Ending point data Y: ";
+    std::cin >> end_y; 
     // Build Model.
     RouteModel model{osm_data};
 
     // Create RoutePlanner object and perform A* search.
-    RoutePlanner route_planner{model, 10, 10, 90, 90};
+    // start_x , start_y starting point 
+    // end_x, end_y : ending point 
+    RoutePlanner route_planner{model, start_x, start_y, end_x, end_y};
     route_planner.AStarSearch();
 
     std::cout << "Distance: " << route_planner.GetDistance() << " meters. \n";
@@ -68,6 +81,7 @@ int main(int argc, const char **argv)
     // Render results of search.
     Render render{model};
 
+    // iod2d code to display road
     auto display = io2d::output_surface{400, 400, io2d::format::argb32, io2d::scaling::none, io2d::refresh_style::fixed, 30};
     display.size_change_callback([](io2d::output_surface& surface){
         surface.dimensions(surface.display_dimensions());
